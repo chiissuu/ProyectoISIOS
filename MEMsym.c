@@ -62,8 +62,13 @@
   #include <string.h>
 
   // 1.2 · Valores
-  #define DIRECCION "accesos_memoria.txt"
-  #define ARCHIVOSALIDA "CONTENTS_CACHE.bin"
+  #define DIRECCIONESCPU "accesos_memoria.txt"
+  #define ARCHIVOSALIDA  "CONTENTS_CACHE.bin"
+  #define DIRECCIONESRAM "CONTENTS_RAM.bin"
+  
+  #define NUM_FILAS 8
+  #define TAM_LINEA 16        
+  #define RAM_SIZE 4096       
 
   // 1.3 · Estructuras
   typedef struct {
@@ -71,24 +76,81 @@
     unsigned char Data[TAM_LINEA];
   } T_CACHE_LINE;
   
+  // 1.4 · Variables globales (Asumo que se pueden utilizar, el año pasado no se podia)
+  int globaltime = 0;
+  int numfallos  = 0;
+  
+  char RAM[RAM_SIZE];
+  
 // 2 · Prototipos de funciones a desarollar
-  void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]);
-  void VolcarCACHE(T_CACHE_LINE *tbl);
-  void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque);
-
-void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ,
-int linea, int bloque);
+	void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]); // 1Mario
+	void VolcarCACHE(T_CACHE_LINE *tbl); // 2Jesús
+	void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque); // 3Mario
+	void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ, int linea, int bloque); // 4Jesús
 
 // 3 · Función principal main
 int main (int argc, char* argv[]){
 
-  // 3.1 · Variables del programa
-  char T_CACHE_LINE[8];
-  int globaltime = 0;
-  int numfallos = 0;
+  // 3.1 · Variables del main
+  char T_CACHE_LINE[NUM_FILAS]; // 8 filas, 8 elementos.
+
 
 }
 
 // 4 · Desarollo de funciones
-// 4.1 · Función para...
+	// 4.1 · Función para...
+		void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]){
+			
+		}
+		
+	// 4.2 · (Jesús)Función cuyo proposito es enseñar el estado actual de la caché cuando se la llame.
+	
+		/*
+		* Consistiendo en mostrar el contenido del array de estrcuturas T_CACHE_LINE.
+		* Nos piden tambien: "Los datos se imprimen de izquierda a derecha de mayor a menor peso. Esto
+		* significa que el byte situado más a la izquierda es el byte 15 de la línea y el
+		* situado a la derecha el byte 0." 
+		*/
+	
+		//· T_CACHE_LINE *tbl - Puntero al primer elemento del array de estructuras T_CACHE_LINE
+		void VolcarCACHE(T_CACHE_LINE *tbl){
+			printf("Estado actual de la cache:\n");
+			
+			// Para mostrar el contenido del array de estructuras hacemos un bucle for que analice todas sus lineas.
+			// Como aqui no nos dicen el orden empezamos desde la linea 0 incrementando el valor hasta 7.
+			for (int i = 0; i < NUM_FILAS; ++i) {
+				printf("Linea %d | ETQ:%02X | Datos: ", i, tbl[i].ETQ);
+				
+				 // Nos piden imprimir los datos de mayor a menor peso: byte 15 (may,izq)  hasta 0 (men,der).
+				 // De esta forma empezamos por el numero 15 que es 16 (Tlin) -1 y vamos decrementando su valor hasta llegar a 0.
+				for (int j = TAM_LINEA - 1; j >= 0; --j) {
+					printf("%02X ", tbl[i].Data[j]);
+				}
+				printf("\n"); // Salto de liena cada linea para que se vea limpio.
+			}
+			print("Fin del estado actual de la cache\n")
 
+
+	// 4.3 · Función para...
+		void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque){
+			
+		}
+
+	// 4.4 · (Jesús)Función que se llama cuando se produce un MISS en la cache-
+	
+		/*
+		* Un miss es un fallo de acceso de la cache a un bloque de memoria de la RAM, ahora el porceso se hace de CPU a RAM.
+		*
+		*
+		*/
+	
+	
+		//· T_CACHE_LINE *tbl - Puntero al primer elemento del array de estructuras T_CACHE_LINE
+		//· char *RAM - Puntero a la memoria RAM
+		//· int ETQ - etiqueta de la cache
+		//· int linea - linea de la cache
+		//· int bloque - bloque de la ram
+		void TratarFallo(T_CACHE_LINE *tbl, char *RAM, int ETQ, int linea, int bloque){
+			
+			
+		}
