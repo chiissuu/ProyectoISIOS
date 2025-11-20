@@ -83,24 +83,36 @@
   char RAM[RAM_SIZE];
   
 // 2 · Prototipos de funciones a desarollar
-	void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]); // 1Mario
-	void VolcarCACHE(T_CACHE_LINE *tbl); // 2Jesús
-	void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque); // 3Mario
-	void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ, int linea, int bloque); // 4Jesús
+	void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]); // 1 Mario
+	void VolcarCACHE(T_CACHE_LINE *tbl); // 2 Jesús
+	void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque); // 3 Mario
+	void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ, int linea, int bloque); // 4 Jesús
 
 // 3 · Función principal main
 int main (int argc, char* argv[]){
 
   // 3.1 · Variables del main
-  char T_CACHE_LINE[NUM_FILAS]; // 8 filas, 8 elementos.
+  T_CACHE_LINE[NUM_FILAS]; // 8 filas, 8 elementos.
 
+	// Se inicializa la caché al arrancar para vaciarla y poder usarse sin errores. 
+	LimpiarCACHE(cache);
 
 }
 
 // 4 · Desarollo de funciones
-	// 4.1 · Función para...
+	// 4.1 · (Mario)Función para inicializar el estado de la caché al inciar el simulador.
+		/*
+		Esta inicia en un estado vacio, la etiqueta de cada linea se inicializa a 0xFF para indicarles que no tienen memoria ya que 0xFF no es una etiqueta valida.
+		Rellena las lineas con 0x23 que es un valor fijo para ver que se ha cargado un valor pero que no tiene un dato real 
+		*/
 		void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]){
-			
+			for(int i = 0; i < NUM_FILAS; i++){
+				tbl[i].ETQ = 0xFF;			// Igualar las etiquetas a invalidado/vacio
+
+				for(int j = 0; j < TAM_LINEA; j++){
+					tbl[i].Data[j]  = 0x23;			// Se rellena los bytes de linea con 0x23
+				}
+			}
 		}
 		
 	// 4.2 · (Jesús)Función cuyo proposito es enseñar el estado actual de la caché cuando se la llame.
@@ -131,7 +143,7 @@ int main (int argc, char* argv[]){
 			print("Fin del estado actual de la cache\n")
 
 
-	// 4.3 · Función para...
+	// 4.3 · (Mario)Función para...
 		void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque){
 			
 		}
