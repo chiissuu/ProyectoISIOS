@@ -1,8 +1,8 @@
-//------------------------
-//  · Programa: MEMsym.c
-//  · Autores: Jesús León y Mario
-//  · Fecha: 23/11/2025
-//------------------------
+//--------------------------------------------------------------//
+//  · Programa: MEMsym.c										//
+//  · Autores: Jesús León Romero Atienza y Mario Viso Quito		//
+//  · Fecha de entrega: 23/11/2025								//
+//--------------------------------------------------------------//
 
 
 
@@ -60,6 +60,7 @@
   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
+  #include <unistd.h>     // Libreria necesaria para el uso de la funcion: sleep()
 
   // 1.2 · Valores
   #define DIRECCIONESCPU "accesos_memoria.txt"
@@ -68,8 +69,10 @@
   
   #define NUM_FILAS 8
   #define TAM_LINEA 16        
-  #define RAM_SIZE 4096       
-
+  #define RAM_SIZE 4096     
+  
+  #define MAX_TAM_TEXTO 101 // + '\0' caracter nulo
+  
   // 1.3 · Estructuras
   typedef struct {
     unsigned char ETQ;
@@ -79,23 +82,64 @@
   // 1.4 · Variables globales (Asumo que se pueden utilizar, el año pasado no se podia)
   int globaltime = 0;
   int numfallos  = 0;
-  
   char RAM[RAM_SIZE];
   
 // 2 · Prototipos de funciones a desarollar
-	void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]); // 1 Mario
-	void VolcarCACHE(T_CACHE_LINE *tbl); // 2 Jesús
-	void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque); // 3 Mario
-	void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ, int linea, int bloque); // 4 Jesús
+	void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]); // 1Mario
+	void VolcarCACHE(T_CACHE_LINE *tbl); // 2Jesús
+	void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque); // 3Mario
+	void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ, int linea, int bloque); // 4Jesús
 
 // 3 · Función principal main
 int main (int argc, char* argv[]){
 
-  // 3.1 · Variables del main
-  T_CACHE_LINE[NUM_FILAS]; // 8 filas, 8 elementos.
+  // 3.1 · Inializaciones
+  
+	  // 3.1.1 · Variables
+	  char T_CACHE_LINE[NUM_FILAS]; // 8 filas, 8 elementos.
+	  
+	  char texto[MAX_TAM_TEXTO];            
+	  int textolen = 0;
+	  
+	  
+	  // 3.1.2 · Limpiar la cache al ejecutar el programa
+	  LimpiarCACHE(cache);
+		
+	  // 3.1.3 · Leer el fichero RAM
+	  
+	  // 3.1.4 · Abrir accesos_memoria.txt, DIRECCIONESCPU
+  
+  //***** BUCLE QUE CONTENGA 3.2, 3.3, 3.4, 3.5
+  // Se leerá dirección por dirección del fichero accesos_memoria.txt, 
+  //procesándose cada una dentro de un bucle hasta terminar el fichero
+  
+  
+  // 3.2 · Leer una direccion y dividirla en etiqueta, linea, palabra y bloque.
+  // Para ello se puede hacer un bucle con la f3 que todavia falta por completar.
+  
+  // 3.3 · Detectar un HIT o un MISS
+	// Nos piden que si ocurre el MISS se incremente la variable numfallos y se le sume 20 al tiempo (globaltime).
+	// Impirmir un mensaje con la info del miss: globaltime, numfallos, direccion, etiqueta, linea, palabra, bloque.
+	// Llamar a la funcion que trata el miss, f4
+	// Impirmir un mensaje con la info del hit: globaltime, direccion, etiqueta, linea, palabra, dato.
 
-	// Se inicializa la caché al arrancar para vaciarla y poder usarse sin errores. 
-	LimpiarCACHE(cache);
+	
+  // 3.4 · Añadir los datos que se han leido al texto finales
+  texto[textolen++] = dato; // revisar
+
+  // 3.5 · Volcar el contenido de la cache 
+  // Mediante la funcion f2
+  VolcarCACHE(cache); // revisar
+  
+  // 3.6 · Hacer un sleep de un segundo
+  sleep(1);
+  
+  // 3.7 · Resumen final 
+  // imprimir número de accesos, fallos, tiempo medio y texto leído
+  
+  // 3.8 · Volcado binario de cache al archivo ARCHIVOSALIDA
+  // escribir los datos finales de la estructura cache en el archivo de salida
+  
 
 }
 
@@ -143,7 +187,7 @@ int main (int argc, char* argv[]){
 			print("Fin del estado actual de la cache\n")
 
 
-	// 4.3 · (Mario)Función para...
+	// 4.3 · Función para...
 		void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque){
 			
 		}
@@ -151,18 +195,44 @@ int main (int argc, char* argv[]){
 	// 4.4 · (Jesús)Función que se llama cuando se produce un MISS en la cache-
 	
 		/*
-		* Un miss es un fallo de acceso de la cache a un bloque de memoria de la RAM, ahora el porceso se hace de CPU a RAM.
-		*
-		*
+		* Un miss es cuando la cache no tiene el bloque que necesita la CPU. Se tiene que ir a por el bloque completo a la RAM.
+		* Lo siguiente que pasa es que la caché pide el bloque completo a la RAM. 
+		* La RAM devuelve el bloque completo solicitado y la caché lo copia entero.
+		* La caché actualiza la etiqueta de la dirección correcta y ahora se devuelve el dato a la CPU.
 		*/
 	
 	
 		//· T_CACHE_LINE *tbl - Puntero al primer elemento del array de estructuras T_CACHE_LINE
-		//· char *RAM - Puntero a la memoria RAM
+		//· char *MRAM - Puntero a la memoria RAM
 		//· int ETQ - etiqueta de la cache
 		//· int linea - linea de la cache
 		//· int bloque - bloque de la ram
-		void TratarFallo(T_CACHE_LINE *tbl, char *RAM, int ETQ, int linea, int bloque){
+		void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ, int linea, int bloque){
 			
+			// Para calcular la primera direccion de un bloque de la RAM:
+			// multiplicamos el bloque actual que es el que se pasa por parametro
+			// y lo multiplicamos por el tamaño de la liena, esto nos dara la primera direccion del bloque.
+			int pdb = bloque * TAM_LINEA;
+				
+			// Error: Hay que ponerle 3 digitos hexadecimales al la ram ya que usa 12 bits para almacenar: %03X.
+			printf(" Se carga el bloque: [%02X] En linea: [%02X] Su primera direccion es: [%03X]\n", bloque, linea, base);
 			
+			// Bucle for para copiar los bytes del bloque (TAM_LINEA = 16) de la RAM a la caché
+			// del 0 al 15, i < TAM_LINEA, para en el 15.
+			for (int i = 0; i < TAM_LINEA; ++i) {
+				
+				// a va a ser la direccion actual de la RAM que se esta copiando
+				int dactual = pdb + i;
+				
+				// Se copia el dato de la RAM en el array de estructuras que almacena los datos
+				// La linea x del dato x sera el dato actual de la RAM x. tbl[x].Data[x] = 0xXX
+				tbl[linea].Data[i] = MRAM[dactual];
+			}
+			
+			// Es importante también actualizar la etiqueta ya que antes se esta poniendo la
+			// etiqueta a invalidado 0xFF y hay que ponerla con el valor actual que se le pasa 
+			// por parametro.
+			tbl[linea].ETQ = ETQ;
+				
 		}
+
