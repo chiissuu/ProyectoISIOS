@@ -1,9 +1,8 @@
-//--------------------------------------------------------------//
-//  · Programa: MEMsym.c										//
-//  · Autores: Jesús León Romero Atienza y Mario Viso Quito		//
-//  · Fecha de entrega: 23/11/2025								//
-//--------------------------------------------------------------//
-
+//------------------------------------//
+//  · Programa: MEMsym.c			  //
+//  · Autores: Jesús León y Mario     //
+//  · Fecha: 23/11/2025 			  //
+//------------------------------------//
 
 
 /* --- Comentario para desarrollar todos los conceptos que contiene el ejercicio y lo que hay que hacer en él. ---
@@ -71,7 +70,7 @@
   #define TAM_LINEA 16        
   #define RAM_SIZE 4096     
   
-  #define MAX_TAM_TEXTO 101 // + '\0' caracter nulo
+  #define MAX_TAM_TEXTO 1001 // + '\0' caracter nulo, tamaño predeterminado, luego se ve si es mas o menos
   
   // 1.3 · Estructuras
   typedef struct {
@@ -96,51 +95,126 @@ int main (int argc, char* argv[]){
   // 3.1 · Inializaciones
   
 	  // 3.1.1 · Variables
-	  char T_CACHE_LINE[NUM_FILAS]; // 8 filas, 8 elementos.
+	  T_CACHE_LINE[NUM_FILAS]; // 8 filas en la cache, 8 elementos.
 	  
-	  char texto[MAX_TAM_TEXTO];            
-	  int textolen = 0;
-	  
+	  char texto[MAX_TAM_TEXTO]; // texto final leido	      
+	  int textolen = 0; // n de dato dentro de texto
+	  int accesos = 0; // n de accesos
+ 
+	  int addr;
+	  int ETQ, palabra, linea, bloque, addr;
+	  char dato
 	  
 	  // 3.1.2 · Limpiar la cache al ejecutar el programa
 	  LimpiarCACHE(cache);
 		
-	  // 3.1.3 · Leer el fichero RAM
+	  // 3.1.3 · (Jesús) Abrir y leer el fichero RAM, "CONTENTS_RAM.bin", DIRECCIONESRAM.
 	  
-	  // 3.1.4 · Abrir accesos_memoria.txt, DIRECCIONESCPU
+		  // Abrimos el archivo
+		  FILE *fRAM = fopen(DIRECCIONESRAM, "r");
+		  if (!fRAM) {
+			perror("ERROR: no se pudo abrir CONTENTS_RAM.bin");
+			return -1;
+		  }
+		  
+		  // (Verificación) Comporbar que el n de elementos del archivo ram es el mismo
+		  // que el que nos da el enunciado   
+		  size_t leidos = fread(RAM, 1, RAM_SIZE, fRAM);
+		  if (leidos != RAM_SIZE) {
+			// %zu para imprimir del tipo size_t
+			fprintf(stderr, "ERROR: se esperaban %d bytes de RAM y se leyeron %zu\n", RAM_SIZE, leidos);
+			fclose(fRAM);
+			return -1;
+		  }
+		  fclose(fRAM);
+	  
+	  
+	  
+	  // 3.1.4 · (Mario) Abrir accesos_memoria.txt, DIRECCIONESCPU.
   
-  //***** BUCLE QUE CONTENGA 3.2, 3.3, 3.4, 3.5
-  // Se leerá dirección por dirección del fichero accesos_memoria.txt, 
-  //procesándose cada una dentro de un bucle hasta terminar el fichero
-  
-  
-  // 3.2 · Leer una direccion y dividirla en etiqueta, linea, palabra y bloque.
-  // Para ello se puede hacer un bucle con la f3 que todavia falta por completar.
-  
-  // 3.3 · Detectar un HIT o un MISS
-	// Nos piden que si ocurre el MISS se incremente la variable numfallos y se le sume 20 al tiempo (globaltime).
-	// Impirmir un mensaje con la info del miss: globaltime, numfallos, direccion, etiqueta, linea, palabra, bloque.
-	// Llamar a la funcion que trata el miss, f4
-	// Impirmir un mensaje con la info del hit: globaltime, direccion, etiqueta, linea, palabra, dato.
+    
+	  // Bucle while que procese cada acceso de la CPU a la cache procesando MISS o HIT y toda la informacion.
+	  // Bucle while que funciona mientras que la lectura del elemento fichero accesos_memeoria.txt sea correcta
+	  // y que no pase el mañano que le hemos puesto default que de momento es de 1000.
+      while (fscanf(fCPU, "%X", &addr) == 1 && textolen < (MAX_TAM_TEXTO - 1)) {
+		  
+		// Incrementamos los accesos que hace la CPU a la mcache
+		accesos++; 
+		 
+		// 3.2 · Leer una direccion y dividirla en etiqueta, linea, palabra y bloque, la f3.
+        ParsearDireccion(addr, &ETQ, &palabra, &linea, &bloque);
+		
+		// 3.3 · Detectar un HIT o un MISS
+			
+			/*
+			* Nos piden que si ocurre el MISS se incremente la variable numfallos y se le sume 20 al tiempo (globaltime).
+			* Impirmir un mensaje con la info del miss: globaltime, numfallos, direccion, etiqueta, linea, palabra, bloque.
+			* Llamar a la funcion que trata el miss, f4
+			* Impirmir un mensaje con la info del hit: globaltime, direccion, etiqueta, linea, palabra, dato.
+			*/
+			
+		// SI la etiqueta de la liena que se esta tratando actualmente es la etiqueta calculada en la f3, es un hit.
+		if (cache[linea].ETQ == (unsigned char)ETQ) {
+			
+            // HIT (Jesús): aquí podemos considerar coste 1 de tiempo por acierto
+            globaltime++;
 
+			// Añadimos el dato leido 
+            dato = cache[linea].Data[palabra];
+
+			// Imprimimos toda la infromacion como nos piden
+            printf("T: %d, ACIERTO DE CACHE (HIT), ADDR: %04X ETQ: %X LINEA: %02X PALABRA: %02X DATO: %02X\n",
+                   globaltime, addr, ETQ, linea, palabra, dato);
+
+        } else {
+			
+            // MISS (Mario): si no es la etiqueta tratada en f3, es un MISS.
+
+        }		
+		  
+		  	
+	  // 3.4 · Añadir los datos que se han leido al texto finales
+	  texto[textolen++] = dato; // revisar
+
+	  // 3.5 · Volcar el contenido de la cache 
+	  // Mediante la funcion f2
+	  VolcarCACHE(cache); // revisar
+	  
+	  // 3.6 · Hacer un sleep de un segundo
+	  sleep(1);
+		  
+		  
+		  
+	  }
+
+  
+	 // 3.7 · (Mario) Resumen final 
+	 // Para el tiempo medio dividir global time entre los accesos.
+	 // imprimir número de accesos, fallos, tiempo medio y texto leído
+	  
+	  
+	 // 3.8 · (Jesús)Volcado binario de cache al archivo ARCHIVOSALIDA
+	 // escribir los datos finales de la estructura cache en el archivo de salida
+	  
+	  // Abrimos el archivo, IMPORTANTE ponerla el modo de apertura con b para binario
+		FILE *fOUT = fopen(ARCHIVOSALIDA, "wb");
+		if (!fOUT) {
+			perror("ERROR: no se pudo abrir el archivo accesos_memoria.txt para exribir ");
+			return -1;
+		}
 	
-  // 3.4 · Añadir los datos que se han leido al texto finales
-  texto[textolen++] = dato; // revisar
-
-  // 3.5 · Volcar el contenido de la cache 
-  // Mediante la funcion f2
-  VolcarCACHE(cache); // revisar
-  
-  // 3.6 · Hacer un sleep de un segundo
-  sleep(1);
-  
-  // 3.7 · Resumen final 
-  // imprimir número de accesos, fallos, tiempo medio y texto leído
-  
-  // 3.8 · Volcado binario de cache al archivo ARCHIVOSALIDA
-  // escribir los datos finales de la estructura cache en el archivo de salida
-  
-
+	  // Volcamos los 16 bytes de cada línea (8 * 16 = 128 bytes en total)
+		for (int i = 0; i < NUM_FILAS; ++i) {
+			for (int j = 0; j < TAM_LINEA; ++j) {
+				// fwrite(Elemento a escribir/tbyte/elemento(uno por el bucle)/ficherosalida)
+				fwrite(&cache[i].Data[j], 1, 1, fOUT);
+			}
+		}
+		
+	  fclose(fOUT);
+	
+	// Fin del main
+    return 0;
 }
 
 // 4 · Desarollo de funciones
@@ -184,7 +258,7 @@ int main (int argc, char* argv[]){
 				}
 				printf("\n"); // Salto de liena cada linea para que se vea limpio.
 			}
-			print("Fin del estado actual de la cache\n")
+			printf("Fin del estado actual de la cache\n")
 
 
 	// 4.3 · (Mario) Función para extraer la etiqueta, palabra, linea y bloque de una dirección.
@@ -200,7 +274,7 @@ int main (int argc, char* argv[]){
 			*/
 		}
 
-	// 4.4 · (Jesús)Función que se llama cuando se produce un MISS en la cache-
+	// 4.4 · (Jesús)Función que se llama cuando se produce un MISS en la cache
 	
 		/*
 		* Un miss es cuando la cache no tiene el bloque que necesita la CPU. Se tiene que ir a por el bloque completo a la RAM.
@@ -223,7 +297,7 @@ int main (int argc, char* argv[]){
 			int pdb = bloque * TAM_LINEA;
 				
 			// Error: Hay que ponerle 3 digitos hexadecimales al la ram ya que usa 12 bits para almacenar: %03X.
-			printf(" Se carga el bloque: [%02X] En linea: [%02X] Su primera direccion es: [%03X]\n", bloque, linea, base);
+			printf(" Se carga el bloque: [%02X] En linea: [%02X] Su primera direccion es: [%03X]\n", bloque, linea, pdb);
 			
 			// Bucle for para copiar los bytes del bloque (TAM_LINEA = 16) de la RAM a la caché
 			// del 0 al 15, i < TAM_LINEA, para en el 15.
