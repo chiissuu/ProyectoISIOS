@@ -117,9 +117,11 @@ int main (int argc, char* argv[]){
 			return -1;
 		  }
 		  
-		  // (Verificación) Comporbar que el n de elementos del archivo ram es el mismo
-		  // que el que nos da el enunciado   
+		  // Copiamos el contenido del fichero RAM.
 		  size_t leidos = fread(RAM, 1, RAM_SIZE, fRAM);
+		  
+		  //(Verificación) Comporbar que el n de elementos del archivo ram es el mismo
+		  // que el que nos da el enunciado 
 		  if (leidos != RAM_SIZE) {
 			// %zu para imprimir del tipo size_t
 			fprintf(stderr, "ERROR: se esperaban %d bytes de RAM y se leyeron %zu\n", RAM_SIZE, leidos);
