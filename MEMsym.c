@@ -187,9 +187,17 @@ int main (int argc, char* argv[]){
 			print("Fin del estado actual de la cache\n")
 
 
-	// 4.3 · Función para...
+	// 4.3 · (Mario) Función para extraer la etiqueta, palabra, linea y bloque de una dirección.
 		void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque){
-			
+			/*
+			addr = dirección 
+			ETQ, palabra, linea, bloque: salidas por puntero
+   Campos según enunciado:
+     - palabra: bits [3:0]
+     - linea:   bits [6:4]
+     - ETQ:     bits [11:7]
+     - bloque:  addr >> 4 (número de bloque de 16 bytes)
+			*/
 		}
 
 	// 4.4 · (Jesús)Función que se llama cuando se produce un MISS en la cache-
