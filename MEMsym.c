@@ -266,14 +266,32 @@ int main (int argc, char* argv[]){
 	// 4.3 · (Mario) Función para extraer la etiqueta, palabra, linea y bloque de una dirección.
 		void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque){
 			/*
-			addr = dirección 
-			ETQ, palabra, linea, bloque: salidas por puntero
-   Campos según enunciado:
-     - palabra: bits [3:0]
-     - linea:   bits [6:4]
-     - ETQ:     bits [11:7]
-     - bloque:  addr >> 4 (número de bloque de 16 bytes)
+	Estas son las unidades del enunciado y como estarian divididas:
+     -palabra: va de 0-3 bits
+     -linea:   va de 4-6 bits
+     -ETQ:     va de 7-11 bits
+     -bloque:  numero de bloque de 16 bytes (2^4)
 			*/
+		addr = addr & 0x0FFFu; /*Se limita a 12 bits y se asignan a addr si alguno es mayor de 12 daria error*/
+
+				/*La palabra siendo los 4 bits mas bajos se coge con 0x0F (0000 1111)*/
+				if(palabra != NULL){
+					*palabra = addr & 0x0F;
+				}
+
+				if(linea != NULL){
+					int addr2 = addr >> 4; /*Se desplazan los bits para quitar los 4 de la palabra*/
+					*linea = addr2 & 0x07; /*Se queda con los 3 bits siguientes quitando la palabra*/
+				}
+
+				if(ETQ != NULL){
+					int addr3 = addr >> 7; /*Quitamos los 7 bits sumando 4 de palabra y 3 de linea*/
+					*ETQ = addr3 & 0x1F; /*Se queda con los 5 bits siguientes(lo que queda) que son la etiqueta*/
+				}
+				/*Divide la direccion entre 16 para saber cual es el bloque que contiene la RAM*/
+				if(bloque != NULL){
+					*bloque = addr / 16; /*Como cada bloque son 16 bytes se quitan 4 bits de palabra(dividir entre 16 es lo mismo que desplazar 4 bits a la derecha >> 4)*/
+				}
 		}
 
 	// 4.4 · (Jesús)Función que se llama cuando se produce un MISS en la cache
