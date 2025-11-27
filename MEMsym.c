@@ -9,7 +9,7 @@
 
   1 · Explicación del funcionamiento de una caché con nuestros datos:
   
-	· La CPU necesita direcciones que contiene la RAM, la CPU puede hacer el proceso de ir a 
+	· La CPU necesita dire  b     cciones que contiene la RAM, la CPU puede hacer el proceso de ir a 
 	recoger estas direcciones, pero es un procedimiento que lleva bastante tiempo.
 	
     · Por ello, existe nuestra caché, que es el intermediario entre estos dos para optimizar el tiempo de recogida de datos. 
@@ -133,7 +133,11 @@ int main (int argc, char* argv[]){
 	  
 	  
 	  // 3.1.4 · (Mario) Abrir accesos_memoria.txt, DIRECCIONESCPU.
-  
+  		fCPU = fopen(DIRECCIONESCPU, "r");
+			if(CPU != NULL){
+				printf("Error no se pudo abrir el archivo");
+				return 0;
+			}
     
 	  // Bucle while que procese cada acceso de la CPU a la cache procesando MISS o HIT y toda la informacion.
 	  // Bucle while que funciona mientras que la lectura del elemento fichero accesos_memeoria.txt sea correcta
@@ -171,7 +175,16 @@ int main (int argc, char* argv[]){
         } else {
 			
             // MISS (Mario): si no es la etiqueta tratada en f3, es un MISS.
+			numfallos++; //Se suma la cantidad de fallos total
+			globaltime += 20; //Suma a la variable el varlo del miss que son 20 unidades de tiempo
 
+			printf("MISS en ADDR %04X (ETQ=%X, linea=%d, palabra=%d, bloque=%d)\n", addr, ETQ, linea, palabra, bloque); // Esto en formato hexadecimal 4 y 2 digitos para que se vea de manera clara y simplificada, la ETQ, palabra, linea y el bloque
+			
+            // Llamar a la funcion que trata el fallo
+            TratarFallo(cache, RAM, ETQ, linea, bloque);  
+
+            // Después de cargar el bloque, el dato ya está en la caché
+            dato = cache[linea].Data[palabra]; // Despues de que la funcion copie el bloque en la cache, el byte necesario esta en la variable de la estructura cache[linea].Data[palabra], luego se asigna a la variable dato   
         }		
 		  
 		  	
@@ -184,8 +197,6 @@ int main (int argc, char* argv[]){
 	  
 	  // 3.6 · Hacer un sleep de un segundo
 	  sleep(1);
-		  
-		  
 		  
 	  }
 
