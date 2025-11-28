@@ -199,12 +199,21 @@ int main (int argc, char* argv[]){
 	  sleep(1);
 		  
 	  }
-
+	fclose(fCPU);
   
 	 // 3.7 · (Mario) Resumen final 
 	 // Para el tiempo medio dividir global time entre los accesos.
 	 // imprimir número de accesos, fallos, tiempo medio y texto leído
-	  
+	 // Añadir al final el valor nulo para poder imprimirlo 
+    texto[textolen] = '\0'; 
+
+    float tiempo_medio = 0.0f; // Se inicializa a 0 por si hay errores
+    if (accesos > 0) {
+        tiempo_medio = (float)globaltime / (float)accesos; //Se calcula la media 
+	}
+
+	// imprimir número de accesos, fallos, tiempo medio y texto leído
+	printf("Accesos totales: %d; fallos: %d; Tiempo medio: %.2f; texto leido: %s\n", accesos, numfallos, tiempo_medio, texto);
 	  
 	 // 3.8 · (Jesús)Volcado binario de cache al archivo ARCHIVOSALIDA
 	 // escribir los datos finales de la estructura cache en el archivo de salida
