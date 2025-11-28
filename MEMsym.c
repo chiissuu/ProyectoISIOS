@@ -81,13 +81,13 @@
   // 1.4 · Variables globales (Asumo que se pueden utilizar, el año pasado no se podia)
   int globaltime = 0;
   int numfallos  = 0;
-  char RAM[RAM_SIZE];
+  unsigned char RAM[RAM_SIZE];
   
 // 2 · Prototipos de funciones a desarollar
 	void LimpiarCACHE(T_CACHE_LINE tbl[NUM_FILAS]); // 1Mario
 	void VolcarCACHE(T_CACHE_LINE *tbl); // 2Jesús
 	void ParsearDireccion(unsigned int addr, int *ETQ, int *palabra, int *linea, int *bloque); // 3Mario
-	void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ, int linea, int bloque); // 4Jesús
+	void TratarFallo(T_CACHE_LINE *tbl, unsigned char *MRAM, int ETQ, int linea, int bloque); // 4Jesús
 
 // 3 · Función principal main
 int main (int argc, char* argv[]){
@@ -95,15 +95,14 @@ int main (int argc, char* argv[]){
   // 3.1 · Inializaciones
   
 	  // 3.1.1 · Variables
-	  T_CACHE_LINE[NUM_FILAS]; // 8 filas en la cache, 8 elementos.
+	  T_CACHE_LINE cache[NUM_FILAS]; // 8 filas en la cache, 8 elementos.
 	  
 	  char texto[MAX_TAM_TEXTO]; // texto final leido	      
 	  int textolen = 0; // n de dato dentro de texto
 	  int accesos = 0; // n de accesos
  
-	  int addr;
 	  int ETQ, palabra, linea, bloque, addr;
-	  char dato
+	  char dato;
 	  
 	  // 3.1.2 · Limpiar la cache al ejecutar el programa
 	  LimpiarCACHE(cache);
@@ -111,7 +110,7 @@ int main (int argc, char* argv[]){
 	  // 3.1.3 · (Jesús) Abrir y leer el fichero RAM, "CONTENTS_RAM.bin", DIRECCIONESRAM.
 	  
 		  // Abrimos el archivo
-		  FILE *fRAM = fopen(DIRECCIONESRAM, "r");
+		  FILE *fRAM = fopen(DIRECCIONESRAM, "rb");
 		  if (!fRAM) {
 			perror("ERROR: no se pudo abrir CONTENTS_RAM.bin");
 			return -1;
@@ -133,10 +132,10 @@ int main (int argc, char* argv[]){
 	  
 	  
 	  // 3.1.4 · (Mario) Abrir accesos_memoria.txt, DIRECCIONESCPU.
-  		fCPU = fopen(DIRECCIONESCPU, "r");
-			if(CPU != NULL){
-				printf("Error no se pudo abrir el archivo");
-				return 0;
+  		FILE *fCPU = fopen(DIRECCIONESCPU, "r");
+			if(fCPU == NULL){
+				printf("ERROR: no se pudo abrir accesos_memoria.txt");
+				return -1;
 			}
     
 	  // Bucle while que procese cada acceso de la CPU a la cache procesando MISS o HIT y toda la informacion.
@@ -168,8 +167,8 @@ int main (int argc, char* argv[]){
 			// Añadimos el dato leido 
             dato = cache[linea].Data[palabra];
 
-			// Imprimimos toda la infromacion como nos piden
-            printf("T: %d, ACIERTO DE CACHE (HIT), ADDR: %04X ETQ: %X LINEA: %02X PALABRA: %02X DATO: %02X\n",
+			// Imprimimos toda la informacion como nos piden
+            printf("T: %d, Acierto de CACHE, ADDR %04X Label %X linea %02X palabra %02X DATO %02X\n",
                    globaltime, addr, ETQ, linea, palabra, dato);
 
         } else {
@@ -178,7 +177,9 @@ int main (int argc, char* argv[]){
 			numfallos++; //Se suma la cantidad de fallos total
 			globaltime += 20; //Suma a la variable el varlo del miss que son 20 unidades de tiempo
 
-			printf("MISS en ADDR %04X (ETQ=%X, linea=%d, palabra=%d, bloque=%d)\n", addr, ETQ, linea, palabra, bloque); // Esto en formato hexadecimal 4 y 2 digitos para que se vea de manera clara y simplificada, la ETQ, palabra, linea y el bloque
+			printf("T: %d, Fallo de CACHE %d, ADDR %04X Label %X linea %02X palabra %02X bloque %02X\n",
+					globaltime, numfallos, addr, ETQ, linea, palabra, bloque);
+			// Esto en formato hexadecimal 4 y 2 digitos para que se vea de manera clara y simplificada.
 			
             // Llamar a la funcion que trata el fallo
             TratarFallo(cache, RAM, ETQ, linea, bloque);  
@@ -221,7 +222,7 @@ int main (int argc, char* argv[]){
 	  // Abrimos el archivo, IMPORTANTE ponerla el modo de apertura con b para binario
 		FILE *fOUT = fopen(ARCHIVOSALIDA, "wb");
 		if (!fOUT) {
-			perror("ERROR: no se pudo abrir el archivo accesos_memoria.txt para exribir ");
+			perror("ERROR: no se pudo abrir el archivo CONTENTS_CACHE.bin para exribir ");
 			return -1;
 		}
 	
@@ -280,7 +281,8 @@ int main (int argc, char* argv[]){
 				}
 				printf("\n"); // Salto de liena cada linea para que se vea limpio.
 			}
-			printf("Fin del estado actual de la cache\n")
+			printf("Fin del estado actual de la cache\n");
+		}
 
 
 	// 4.3 · (Mario) Función para extraer la etiqueta, palabra, linea y bloque de una dirección.
@@ -329,7 +331,7 @@ int main (int argc, char* argv[]){
 		//· int ETQ - etiqueta de la cache
 		//· int linea - linea de la cache
 		//· int bloque - bloque de la ram
-		void TratarFallo(T_CACHE_LINE *tbl, char *MRAM, int ETQ, int linea, int bloque){
+		void TratarFallo(T_CACHE_LINE *tbl, unsigned char *MRAM, int ETQ, int linea, int bloque){
 			
 			// Para calcular la primera direccion de un bloque de la RAM:
 			// multiplicamos el bloque actual que es el que se pasa por parametro
@@ -357,4 +359,3 @@ int main (int argc, char* argv[]){
 			tbl[linea].ETQ = ETQ;
 				
 		}
-
