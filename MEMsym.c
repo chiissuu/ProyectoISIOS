@@ -205,6 +205,7 @@ int main (int argc, char* argv[]){
 	 // 3.7 · (Mario) Resumen final 
 	 // Para el tiempo medio dividir global time entre los accesos.
 	 // imprimir número de accesos, fallos, tiempo medio y texto leído
+	
 	 // Añadir al final el valor nulo para poder imprimirlo 
     texto[textolen] = '\0'; 
 
