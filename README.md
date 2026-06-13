@@ -5,18 +5,37 @@
 ![Build](https://img.shields.io/badge/build-GCC-orange)
 ![Status](https://img.shields.io/badge/status-Active-success)
 
-MegatronixOS is an educational operating systems project developed in C that implements core operating system concepts such as process scheduling, memory management and inter-process communication.
+MegatronixOS is an educational operating systems project developed in C that simulates the behavior of a direct-mapped CPU cache memory system. The simulator processes memory access requests, detects cache hits and misses, loads memory blocks from RAM when required, and generates detailed execution statistics such as cache faults, average access time and reconstructed output data.
 
-The project was designed to explore low-level systems programming while providing a practical implementation of the fundamental components found in modern operating systems.
+The project was designed to explore low-level systems programming concepts, including memory hierarchy management, cache organization, address decoding and binary file manipulation. By emulating the interaction between the CPU, cache and RAM, it provides a practical understanding of how modern computer architectures optimize memory access performance.
 
-## Features
+## Project Structure
 
-- Process creation and management
-- CPU scheduling algorithms
-- Memory allocation and management
-- Inter-process communication
-- Synchronization primitives
-- System-level programming in C
+```text
+## Project Structure
+
+```text
+MegatronixOS/
+├── MEMsym.c
+├── CONTENTS_RAM.bin
+├── accesos_memoria.txt
+└── CONTENTS_CACHE.bin
+```
+
+- `MEMsym.c`: main source code of the cache memory simulator.
+- `CONTENTS_RAM.bin`: binary file representing the simulated RAM.
+- `accesos_memoria.txt`: input file containing memory addresses requested by the CPU.
+- `CONTENTS_CACHE.bin`: output file generated with the final cache contents.
+
+## Workflow
+1. The simulator loads the RAM contents from CONTENTS_RAM.bin.
+2. Memory addresses are read sequentially from accesos_memoria.txt.
+3. Each address is decoded into tag, line, word and block fields.
+4. The cache determines whether the access is a HIT or a MISS.
+5. On a MISS, the corresponding block is loaded from RAM into the cache.
+6. Cache statistics are updated throughout execution.
+7. The final cache state is exported to CONTENTS_CACHE.bin.
+8. A summary report containing total accesses, cache misses, average access time and reconstructed text is displayed.
 
 ## Technologies
 
@@ -46,20 +65,6 @@ Run the executable:
 ./megatronixos
 ```
 
-## Project Structure
-
-```text
-src/
-├── scheduler/
-├── memory/
-├── processes/
-├── ipc/
-└── utils/
-
-include/
-tests/
-docs/
-```
 
 ## Contributing
 
