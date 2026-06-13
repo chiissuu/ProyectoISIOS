@@ -11,28 +11,46 @@ The project was designed to explore low-level systems programming concepts, incl
 
 ## Project Structure
 
-```
+```text
 MegatronixOS/
 ├── MEMsym.c
 ├── CONTENTS_RAM.bin
 ├── accesos_memoria.txt
-└── CONTENTS_CACHE.bin
+├── CONTENTS_CACHE.bin
+└── logcache.txt
 ```
 
 - `MEMsym.c`: main source code of the cache memory simulator.
 - `CONTENTS_RAM.bin`: binary file representing the simulated RAM.
 - `accesos_memoria.txt`: input file containing memory addresses requested by the CPU.
 - `CONTENTS_CACHE.bin`: output file generated with the final cache contents.
+- `logcache.txt`: execution log containing cache hits, misses, cache state dumps and performance statistics.
 
 ## Workflow
-1. The simulator loads the RAM contents from CONTENTS_RAM.bin.
-2. Memory addresses are read sequentially from accesos_memoria.txt.
+
+1. The simulator loads the RAM contents from `CONTENTS_RAM.bin`.
+2. Memory addresses are read sequentially from `accesos_memoria.txt`.
 3. Each address is decoded into tag, line, word and block fields.
-4. The cache determines whether the access is a HIT or a MISS.
-5. On a MISS, the corresponding block is loaded from RAM into the cache.
-6. Cache statistics are updated throughout execution.
-7. The final cache state is exported to CONTENTS_CACHE.bin.
-8. A summary report containing total accesses, cache misses, average access time and reconstructed text is displayed.
+4. The cache determines whether the access is a **HIT** or a **MISS**.
+5. On a **MISS**, the corresponding memory block is loaded from RAM into the cache.
+6. The simulator continuously updates cache statistics and execution time.
+7. Detailed execution information is recorded in `logcache.txt`, including cache hits, cache misses, memory block loads and cache state snapshots.
+8. The final cache state is exported to `CONTENTS_CACHE.bin`.
+9. A summary report containing total accesses, cache misses, average access time and reconstructed output text is displayed at the end of execution.
+
+## Output Files
+
+After execution, the simulator generates the following outputs:
+
+- `CONTENTS_CACHE.bin`: binary dump containing the final state of the cache memory.
+- `logcache.txt`: detailed execution report showing cache activity throughout the simulation.
+
+The terminal output also displays:
+
+- Total memory accesses
+- Cache misses
+- Average access time
+- Reconstructed text obtained from memory accesses
 
 ## Technologies
 
@@ -75,10 +93,7 @@ Contributions, bug reports and feature suggestions are welcome.
 ## Contributors
 
 - Jesús León Romero Atienza (Username de GITHUB: chiissuu)
-
 - Mario Viso Quito (Username de GITHUB: Marioo239)
-
-
 
 ## License
 
